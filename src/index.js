@@ -2,8 +2,8 @@ const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const bodyParser = require("body-parser");
-const { PORT, FRONTEND_URL } = require("./serverConfig");
-const redisCache = require("./redisConnection"); // use the configured Redis client
+const { PORT, FRONTEND_URL } = require("./config/serverConfig");
+const redisCache = require("./config/redisConfig");
 
 const app = express();
 app.use(bodyParser.json());
