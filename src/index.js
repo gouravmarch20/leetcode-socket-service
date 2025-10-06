@@ -13,7 +13,7 @@ const redisCache = new Redis(); // Create Redis client
 // http://127.0.0.1:5501/
 const io = new Server(httpServer, {
   cors: {
-    origin: FRONTEND_URL, //frontend url
+    origin: FRONTEND_URL,
     methods: ["GET", "POST"],
   },
 }); // Create socket.io server
