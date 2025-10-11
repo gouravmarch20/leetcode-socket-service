@@ -12,6 +12,11 @@ const app = express();
 app.use(cors({ origin: "*", methods: ["GET", "POST"], credentials: true }));
 
 app.use(bodyParser.json());
+// Log all incoming HTTP requests
+app.use((req, res, next) => {
+  console.log(`[HTTP] ${req.method} ${req.url} - from ${req.ip}`);
+  next();
+});
 
 const httpServer = createServer(app);
 
@@ -24,6 +29,9 @@ const io = new Server(httpServer, {
   },
 });
 
+app.get("/ping", (req, res) => {
+  return res.json({ message: "Socket Service is alive__0" });
+});
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
 
