@@ -1,23 +1,26 @@
 const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
+const cors = require("cors");
 const bodyParser = require("body-parser");
-const {
-  PORT,
-  FRONTEND_URL,
-  SUBMISSION_PORT,
-} = require("./config/serverConfig");
+const { PORT } = require("./config/serverConfig");
 const redisCache = require("./config/redisConfig");
 
 const app = express();
+
+// ✅ Allow CORS from anywhere
+app.use(cors({ origin: "*", methods: ["GET", "POST"], credentials: true }));
+
 app.use(bodyParser.json());
 
 const httpServer = createServer(app);
-console.log("debu_98", FRONTEND_URL);
+
+// ✅ Allow all origins for Socket.IO too
 const io = new Server(httpServer, {
   cors: {
-    origin: [FRONTEND_URL, SUBMISSION_PORT],
+    origin: "*",
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
@@ -34,9 +37,6 @@ io.on("connection", (socket) => {
       const connId = await redisCache.get(userId);
       console.log("Getting connection id for user id:", userId, connId);
       socket.emit("connectionId", connId);
-
-      const keys = await redisCache.keys("*");
-      console.log("All keys in Redis:", keys);
     } catch (err) {
       console.error("Error fetching from Redis:", err);
     }
@@ -46,6 +46,7 @@ io.on("connection", (socket) => {
 app.post("/sendPayload", async (req, res) => {
   const { userId, payload } = req.body;
   console.log("to_Send", userId, payload);
+
   if (!userId || !payload) {
     return res.status(400).send("Invalid request");
   }
