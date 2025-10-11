@@ -2,17 +2,21 @@ const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const bodyParser = require("body-parser");
-const { PORT, FRONTEND_URL } = require("./config/serverConfig");
+const {
+  PORT,
+  FRONTEND_URL,
+  SUBMISSION_PORT,
+} = require("./config/serverConfig");
 const redisCache = require("./config/redisConfig");
 
 const app = express();
 app.use(bodyParser.json());
 
 const httpServer = createServer(app);
-
+console.log("debu_98", FRONTEND_URL);
 const io = new Server(httpServer, {
   cors: {
-    origin: FRONTEND_URL,
+    origin: [FRONTEND_URL, SUBMISSION_PORT],
     methods: ["GET", "POST"],
   },
 });
@@ -41,6 +45,7 @@ io.on("connection", (socket) => {
 
 app.post("/sendPayload", async (req, res) => {
   const { userId, payload } = req.body;
+  console.log("to_Send", userId, payload);
   if (!userId || !payload) {
     return res.status(400).send("Invalid request");
   }
